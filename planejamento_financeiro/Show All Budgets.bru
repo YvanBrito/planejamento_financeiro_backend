@@ -1,0 +1,15 @@
+meta {
+  name: Show All Budgets
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8080/budget
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bearer_token}}
+}

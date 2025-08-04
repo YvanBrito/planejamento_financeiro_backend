@@ -1,0 +1,15 @@
+meta {
+  name: Delete Budget
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8080/budget/1
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bearer_token}}
+}

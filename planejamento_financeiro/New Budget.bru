@@ -1,0 +1,25 @@
+meta {
+  name: New Budget
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/budget
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bearer_token}}
+}
+
+body:json {
+  {
+    "value": "300",
+    "type": "DESPESA",
+    "date": "2025-08-03T10:30:00",
+    "category_id": "2",
+    "subcategory_id": "2"
+  }
+}

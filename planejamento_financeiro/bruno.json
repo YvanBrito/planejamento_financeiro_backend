@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "planejamento_financeiro",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
