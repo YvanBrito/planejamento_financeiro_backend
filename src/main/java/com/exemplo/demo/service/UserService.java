@@ -1,8 +1,17 @@
 package com.exemplo.demo.service;
 
+import com.exemplo.demo.dto.JwtResponse;
+import com.exemplo.demo.dto.LoginRequest;
+import com.exemplo.demo.dto.UserDTO;
 import com.exemplo.demo.model.*;
 import com.exemplo.demo.repository.*;
+import com.exemplo.demo.security.CustomUserDetails;
+import com.exemplo.demo.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +24,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public UserDTO authenticate(LoginRequest loginRequest) throws Exception {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new Exception("Usuário não encontrado"));
+        return new UserDTO(user.getUsername(), user.getEmail(), jwt);
+    }
 
     public User registerUser(String name, String email, String password, String roleStr) throws Exception {
         if (userRepository.existsByEmail(email)) {

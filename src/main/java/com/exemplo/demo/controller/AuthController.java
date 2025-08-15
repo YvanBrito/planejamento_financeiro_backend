@@ -1,13 +1,10 @@
 package com.exemplo.demo.controller;
 
 import com.exemplo.demo.dto.*;
-import com.exemplo.demo.security.*;
 import com.exemplo.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    @Autowired
     private final UserService userService;
 
     @PostMapping("/register")
@@ -31,15 +27,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
-
-        return ResponseEntity.ok(new JwtResponse(jwt, "Bearer", loginRequest.getEmail()));
+        try {
+            UserDTO userDTO = userService.authenticate(loginRequest);
+            return ResponseEntity.ok(userDTO);
+        } catch (Exception e) {
+            ErrorResponseDTO error = new ErrorResponseDTO(e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
     }
 }

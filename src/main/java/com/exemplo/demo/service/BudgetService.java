@@ -56,6 +56,10 @@ public class BudgetService {
         return toBudgetDTOs(budgets);
     }
 
+    public void deleteBudget(Long id) {
+        budgetRepository.deleteById(id);
+    }
+
     public List<BudgetDTO> toBudgetDTOs(List<Budget> budgets) {
         return budgets.stream()
                 .map(this::toBudgetDTO)
@@ -83,9 +87,5 @@ public class BudgetService {
                 categoryDTO,
                 subcategoryDTO
         );
-    }
-
-    public void deleteBudget(Long id) {
-        budgetRepository.deleteById(id);
     }
 }
